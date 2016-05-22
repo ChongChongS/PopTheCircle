@@ -1,7 +1,7 @@
 import de.looksgood.ani.*;
 
 //宽高比为16:9
-final int WIDTH = 720;
+final int WIDTH = 860;
 
 void settings(){
   float ww = WIDTH;
@@ -50,10 +50,12 @@ void draw(){
   if(!isLockScene)
   {
     for(Scene s: ss){
+      s.update();
       s.display();
     }
   }
   else{
+    seleScene.update();
     seleScene.display();
   }
   

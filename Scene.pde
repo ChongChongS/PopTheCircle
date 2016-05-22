@@ -40,11 +40,21 @@ class SceneStart extends Scene {
     noStroke();
     rect(0, 0, size.x, size.y);
 
-    theta = map(mouseX, 0, width, 0, PI/2);
+    theta = map(mouseY, 0, height, 0, PI/2);
     translate(width/2, height * 0.8);
     stroke(0);
     branch(60);
     popMatrix();
+
+    //fill(150,100);
+    //stroke(50,100);
+    //strokeWeight(20);
+    //ellipse(200,200,100,100);
+    //stroke(0);
+    //strokeWeight(0);
+    //line(200,200,250,200);
+    //line(200,200,200,160);
+    //line(200,200,200,260);
   }
 
   void update_unlock() {
@@ -85,9 +95,25 @@ class SceneStart extends Scene {
 }
 
 class SceneGame extends Scene {
+  float r, nextR, isLarger;
+  float rWeight, RWeight;
+  color nextC;
+  final int die = 0;
+  final int running = 1;
+  int gameState;
+
   SceneGame(int x, int y) {
     anchor = new PVector(x * width, y * height);
     size   = new PVector(width, height);
+
+    rWeight = 4;
+    RWeight = 20;
+    r = 0;
+    nextR = random(100, 400);
+    isLarger = r - nextR;
+    nextC = color(random(255), random(255), random(255));
+
+    gameState = running;
   }
 
   Scene load() {
@@ -99,6 +125,31 @@ class SceneGame extends Scene {
   }
 
   void update() {
+    if ((isLarger >= 0 && (r + rWeight/2) <= (nextR - RWeight/2)) || 
+      (isLarger < 0 && (r - rWeight/2) >= (nextR + RWeight/2))) {
+      gameState = die;
+    }
+
+    if (gameState == die)
+    {
+      if (isLarger >= 0) {
+        println(r + rWeight/2);
+        println(nextR - RWeight/2);
+        println("-----");
+      } else {
+        println(r - rWeight/2);
+        println(nextR + RWeight/2);
+        println("-----");
+      }
+    }
+
+    if (gameState == running) {
+      if (isLarger >= 0) {
+        r -= 2;
+      } else {
+        r += 2;
+      }
+    }
   }
 
   void display() {
@@ -107,6 +158,18 @@ class SceneGame extends Scene {
     fill(#0B091C);
     noStroke();
     rect(0, 0, size.x, size.y);
+
+    noFill();
+
+    //next circle
+    stroke(nextC);
+    strokeWeight(RWeight);
+    ellipse(width/2, height/2, nextR, nextR);
+
+    //the circle
+    stroke(100);
+    strokeWeight(rWeight);
+    ellipse(width/2, height/2, r, r);
     popMatrix();
   }
 
@@ -120,6 +183,16 @@ class SceneGame extends Scene {
   }
 
   void checkPress(float mx, float my) {
+    //change
+    if ((r + rWeight/2) <= (nextR + RWeight/2) &&
+      (r - rWeight/2) >= (nextR - RWeight/2)) {
+      nextR = random(100, 200);
+      nextC = color(random(255), random(255), random(255));
+      isLarger = r - nextR;
+    } else
+    {
+      gameState = die;
+    }
   }
 
   void checkRelease(float mx, float my) {
