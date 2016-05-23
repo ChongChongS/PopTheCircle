@@ -8,19 +8,25 @@ void doEvent(function_type value){
     case NONE:     println("none function");break;
     case SCENE_01: changeToGameView(); break;
     case SCENE_02: changeToStartMenu();break;
-    case SCENE_03: break;
+    case SCENE_03: changeToOverPanel();break;
     default: println("ERROR：使用了未初始化的枚举值（function_enum）"); break;
   }
 }
 
 void changeToGameView(){
   println("scene01 function");
+  ss.get(1).reset();
   sc.moveToScene(ss.get(1));
 }
 
 void changeToStartMenu(){
   println("scene02 function");
   sc.moveToScene(ss.get(0));
+}
+
+void changeToOverPanel(){
+  println("scene03 function");
+  sc.moveToScene(ss.get(2));
 }
 
 class SceneClock{
