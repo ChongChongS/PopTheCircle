@@ -173,7 +173,6 @@ class SceneGame extends Scene {
 
   void update() {
     if (millis() - timer >= maxTime) {
-
       if (gameState == running) {
         //设定速度
         if (isLarger <= 100)
@@ -193,12 +192,15 @@ class SceneGame extends Scene {
       if (((isLarger >= 0) && (r + rWeight/2) <= (nextR - RWeight)) || 
         ((isLarger < 0) && (r - rWeight/2) >= (nextR + RWeight))) {
         gameState = die;
+        sounds.get(0).rewind();
+        sounds.get(0).pause();
       }
 
       if (gameState == die)
       {
         if (r <= height)
           Ani.to(this, 0.2, "r", height * 2, Ani.BOUNCE_IN_OUT);
+        sounds.get(0).pause();
       }
     }
   }
@@ -209,7 +211,7 @@ class SceneGame extends Scene {
     //fill(#f2eada);
     //noStroke();
     //rect(0, 0, size.x, size.y);
-    image(bg,0,0,width,height);
+    image(bg, 0, 0, width, height);
 
     if (r <= height) {
       noFill();
