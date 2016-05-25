@@ -35,7 +35,6 @@ void setup(){
   ss = new ArrayList<Scene>();
   ss.add(new SceneStart(0,0).load());
   ss.add(new SceneGame(1,0).load());
-  ss.add(new SceneOver(1,1).load());
   
   isLockScene = true;
   seleScene = ss.get(0);
@@ -45,7 +44,6 @@ void setup(){
   uf = new UIfactory(us);
   uf.addButton(width/2 - 40,height * 0.8,"Start",function_type.SCENE_01);
   uf.addButton(width + width * 0.1,height * 0.05,"Back",function_type.SCENE_02);
-  uf.addButton(width * 1.5 - 40,height * 1.8,"Restart",function_type.SCENE_03);
 }
 
 void draw(){
@@ -85,4 +83,8 @@ void mouseDragged()
 
 void mouseReleased(){
   us.checkRelease();
+}
+
+void keyPressed(){
+  
 }

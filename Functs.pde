@@ -1,45 +1,49 @@
 //枚举类型 function_enum
-public enum function_type{
-  NONE,SCENE_01,SCENE_02,SCENE_03;
+public enum function_type {
+  NONE, SCENE_01, SCENE_02, SCENE_03;
 }
 
-void doEvent(function_type value){
-  switch(value){
-    case NONE:     println("none function");break;
-    case SCENE_01: changeToGameView(); break;
-    case SCENE_02: changeToStartMenu();break;
-    case SCENE_03: changeToOverPanel();break;
-    default: println("ERROR：使用了未初始化的枚举值（function_enum）"); break;
+void doEvent(function_type value) {
+  switch(value) {
+  case NONE:     
+    println("none function");
+    break;
+  case SCENE_01: 
+    changeToGameView(); 
+    break;
+  case SCENE_02: 
+    changeToStartMenu();
+    break;
+  case SCENE_03: 
+    break;
+  default: 
+    println("ERROR：使用了未初始化的枚举值（function_enum）"); 
+    break;
   }
 }
 
-void changeToGameView(){
+void changeToGameView() {
   println("scene01 function");
   ss.get(1).reset();
   sc.moveToScene(ss.get(1));
 }
 
-void changeToStartMenu(){
+void changeToStartMenu() {
   println("scene02 function");
   sc.moveToScene(ss.get(0));
 }
 
-void changeToOverPanel(){
-  println("scene03 function");
-  sc.moveToScene(ss.get(2));
-}
-
-class SceneClock{
+class SceneClock {
   int startTime;
   int waitTime;
   boolean isOver;
   Scene   toLerp;
-  
-  SceneClock(){
+
+  SceneClock() {
     isOver = true;
   }
-  
-  void moveToScene(Scene ns){
+
+  void moveToScene(Scene ns) {
     isLockScene = false;
     isOver = false;
     float time = 0.9;
@@ -49,12 +53,12 @@ class SceneClock{
     println(pos);
     startTime = millis();
     waitTime  = (int)(time*1000);
-    move(time,pos);
+    move(time, pos);
   }
-  
-  void update(){
-    if(!isOver){
-      if(millis()>startTime+waitTime){
+
+  void update() {
+    if (!isOver) {
+      if (millis()>startTime+waitTime) {
         isOver = false;
         seleScene = toLerp;
         isLockScene = true;
@@ -63,7 +67,7 @@ class SceneClock{
   }
 }
 
-void move(float time, PVector pos){
+void move(float time, PVector pos) {
   Ani.to(this, time, "transX", pos.x, Ani.CUBIC_IN_OUT);
   Ani.to(this, time, "transY", pos.y, Ani.CUBIC_IN_OUT);
 }

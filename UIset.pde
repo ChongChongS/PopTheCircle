@@ -37,6 +37,63 @@ interface KnowMouseArea
   void    release();
 }
 
+class TextArea extends RectArea {
+  final color  default_text_base_color       = color(255, 0, 0);
+  final String default_str                   = "score";
+  final int    default_font_size             = 24;
+
+  String str;
+  int    fontSize;
+  color  textBaseCol;
+  PFont  sysFont;
+  int lifespan;
+  show_type value;
+
+  void setDefaults() {
+    textBaseCol    = default_text_base_color;
+    str            = default_str;
+    fontSize       = default_font_size;
+    sysFont        = null;
+    value          = show_type.NONE;
+    lifespan       = 255;
+  }
+
+  TextArea(float xx, float yy, float ww, float hh, String name) {
+    super(xx, yy, ww, hh);
+    setDefaults();
+    str = name;
+  }
+
+  TextArea setFont(PFont pf) {
+    sysFont = pf;
+    return this;
+  }
+  
+  boolean isDead(){
+    if(lifespan <= 0)
+      return true;
+    else
+      return false;
+  }
+  
+  void draw() {
+    lifespan -= 5;
+    
+    pushMatrix();
+    translate(pos.x, pos.y);
+    fill(textBaseCol,lifespan);
+
+    if (sysFont!=null)
+      textFont(sysFont, fontSize);
+    else 
+      textSize(fontSize);
+
+    textAlign(CENTER);
+    text(str, size.x, size.y);
+
+    popMatrix();
+  }
+}
 
 //用多种颜色绘制的矩形区域（能感知到鼠标）
 class ColorSetRectArea extends RectArea implements KnowMouseArea
@@ -82,8 +139,8 @@ class ColorSetRectArea extends RectArea implements KnowMouseArea
     super(xx, yy, ww, hh);
     setDefaults();
   }
-  
-  ColorSetRectArea(float xx, float yy, float ww, float hh,String butName) {
+
+  ColorSetRectArea(float xx, float yy, float ww, float hh, String butName) {
     super(xx, yy, ww, hh);
     setDefaults();
     str = butName;
@@ -164,10 +221,10 @@ class uiButton implements Clickable
     area  = new ColorSetRectArea(xx, yy, default_w, default_h);
     value = function_type.NONE;
   }
-  
-  uiButton(float xx, float yy,String butName)
+
+  uiButton(float xx, float yy, String butName)
   {
-    area  = new ColorSetRectArea(xx, yy, default_w, default_h,butName);
+    area  = new ColorSetRectArea(xx, yy, default_w, default_h, butName);
     value = function_type.NONE;
   }
 
@@ -210,14 +267,14 @@ class UIfactory {
     uiButton nb = new uiButton(xx, yy);
     tus.add(nb);
   }
-  
+
   void addButton(float xx, float yy, function_type val) {
     uiButton nb = new uiButton(xx, yy).link(val);
     tus.add(nb);
   }
-  
-    void addButton(float xx, float yy,String butName,function_type val) {
-    uiButton nb = new uiButton(xx, yy,butName).link(val);
+
+  void addButton(float xx, float yy, String butName, function_type val) {
+    uiButton nb = new uiButton(xx, yy, butName).link(val);
     tus.add(nb);
   }
 }

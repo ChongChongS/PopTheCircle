@@ -97,26 +97,25 @@ class SceneStart extends Scene {
 }
 
 class SceneGame extends Scene {
+  //圆
   float r, nextR, isLarger;
   float rWeight, RWeight;
   color nextC;
   float speed;
-
+  public boolean isCircle;
+  //游戏状态
   final int die = 0;
   final int running = 1;
   final int stop = 2;
   int gameState;
-
+  //关于粒子
   ArrayList<ParticleSystem> particleSystems;
+  //每回合的暂停
   int timer, maxTime;
-
-  AudioPlayer sound1;
-  AudioPlayer sound2;
-  AudioPlayer sound3;
-  AudioPlayer sound4;
-  AudioPlayer sound5;
-  AudioPlayer sound6;
-  AudioPlayer sound7;
+  //游戏音效
+  ArrayList<AudioPlayer> sounds;
+  //显示文字
+  ArrayList<TextArea> tas;
 
   SceneGame(int x, int y) {
     anchor = new PVector(x * width, y * height);
@@ -133,6 +132,7 @@ class SceneGame extends Scene {
     isLarger = r - nextR;
     nextC = color(random(255), random(255), random(255));
     speed = (r - nextR)%200;
+    isCircle = true;
 
     gameState = running;
 
@@ -141,13 +141,16 @@ class SceneGame extends Scene {
     maxTime = 800;
     timer = millis();
 
-    sound1 = minim.loadFile("sound1.mp3");
-    sound2 = minim.loadFile("sound2.mp3");
-    sound3 = minim.loadFile("sound3.mp3");
-    sound4 = minim.loadFile("sound4.mp3");
-    sound5 = minim.loadFile("sound5.mp3");
-    sound6 = minim.loadFile("sound6.mp3");
-    sound7 = minim.loadFile("sound7.mp3");
+    sounds = new ArrayList<AudioPlayer>();
+    sounds.add(minim.loadFile("sound1.mp3"));
+    sounds.add(minim.loadFile("sound2.mp3"));
+    sounds.add(minim.loadFile("sound3.mp3"));
+    sounds.add(minim.loadFile("sound4.mp3"));
+    sounds.add(minim.loadFile("sound5.mp3"));
+    sounds.add(minim.loadFile("sound6.mp3"));
+    sounds.add(minim.loadFile("sound7.mp3"));
+
+    tas = new ArrayList<TextArea>();
   }
 
   Scene load() {
@@ -186,13 +189,8 @@ class SceneGame extends Scene {
 
       if (gameState == die)
       {
-        //if (isLarger  >= 0) {
-        //println(r + rWeight/2);
-        //println(nextR - RWeight/2 + "---");
-        //} else {
-        //println(r - rWeight/2);
-        //println(nextR + RWeight/2 + "---");
-        //}
+        if(r <= height)
+          Ani.to(this, 0.2, "r", height * 2, Ani.BOUNCE_IN_OUT);
       }
     }
   }
@@ -204,13 +202,16 @@ class SceneGame extends Scene {
     noStroke();
     rect(0, 0, size.x, size.y);
 
-    if (gameState == running) {
+    if (r <= height) {
       noFill();
 
       //next circle
       stroke(nextC);
       strokeWeight(RWeight);
-      ellipse(width/2, height/2, nextR, nextR);
+      if(isCircle)
+        ellipse(width/2, height/2, nextR, nextR);
+      else
+        rect(width/2 - nextR/2, height/2 - nextR/2, nextR, nextR);
       strokeWeight(0);
       stroke(255);
       //line(width/2, height/2, width/2 - nextR/2 - RWeight/2, height/2);
@@ -218,7 +219,10 @@ class SceneGame extends Scene {
       //the circle
       stroke(100);
       strokeWeight(rWeight);
-      ellipse(width/2, height/2, r, r);
+      if(isCircle)
+        ellipse(width/2, height/2, r, r);
+      else
+        rect(width/2 - r/2, height/2 - r/2, r, r);
       strokeWeight(0);
       stroke(255);
       //line(width/2, height/2, width/2, height/2 + r/2 - rWeight/2);
@@ -233,7 +237,17 @@ class SceneGame extends Scene {
             particleSystems.get(i).run();
         }
       }
+
+      //texts
+      for (TextArea ta : tas)
+        ta.draw();
+    } else {
+      fill(color(255, 0, 0));
+      textSize(30);
+      textAlign(CENTER);
+      text("Game Over", width/2, height/2);
     }
+
     popMatrix();
   }
 
@@ -250,6 +264,17 @@ class SceneGame extends Scene {
     //change
     if ((r + rWeight/2) <= (nextR + RWeight) &&
       (r - rWeight/2) >= (nextR - RWeight)) {
+
+      String str = null;
+      if ((r - nextR) <= 0.5)
+        str = "Perfect";
+      else if ((r - nextR) <= 1)
+        str = "Nice";
+      else
+        str = "Good";
+      if (str != null)
+        tas.add(new TextArea(mx - width - 100, my - 100, 100, 100, str));
+
       int newNum = int(random(80, 120));
       particleSystems.add(new ParticleSystem(int(nextR/2 + 10), newNum, nextC));
 
@@ -269,90 +294,12 @@ class SceneGame extends Scene {
   }
 
   void playSound() {
-    sound1.rewind();
-    sound1.pause();
-    sound2.rewind();
-    sound2.pause();
-    sound3.rewind();
-    sound3.pause();
-    sound4.rewind();
-    sound4.pause();
-    sound5.rewind();
-    sound5.pause();
-    sound6.rewind();
-    sound6.pause();
-    sound7.rewind();
-    sound7.pause();
-
-    int temp = int(random(1, 8));
-    switch(temp) {
-    case 1:
-      sound1.play();
-      break;
-    case 2:
-      sound2.play();
-      break;
-    case 3:
-      sound3.play();
-      break;
-    case 4:
-      sound4.play();
-      break;
-    case 5:
-      sound5.play();
-      break;
-    case 6:
-      sound6.play();
-      break;
-    case 7:
-      sound7.play();
-      break;
-    default:
-      sound1.play();
-      break;
+    for (AudioPlayer ap : sounds) {
+      ap.rewind();
+      ap.pause();
     }
-  }
-
-  void checkRelease(float mx, float my) {
-  }
-}
-
-class SceneOver extends Scene {
-  SceneOver(int x, int y) {
-    anchor = new PVector(x * width, y * height);
-    size = new PVector(width, height);
-  }
-
-  Scene load() {
-    println("Scene Over");
-    return this;
-  }
-
-  void reset() {
-  }
-
-  void update() {
-  }
-
-  void display() {
-    pushMatrix();
-    translate(anchor.x, anchor.y);
-    fill(255);
-    noStroke();
-    rect(0, 0, size.x, size.y);
-    popMatrix();
-  }
-
-  void update_unlock() {
-  }
-
-  void display_unlock() {
-  }
-
-  void checkHover(float mx, float my) {
-  }
-
-  void checkPress(float mx, float my) {
+    int index = int(random(0, 7));
+    sounds.get(index).play();
   }
 
   void checkRelease(float mx, float my) {
