@@ -42,8 +42,8 @@ void setup(){
   //构建按钮
   us = UIset.getInstance();
   uf = new UIfactory(us);
-  uf.addButton(width/2 - 40,height * 0.8,"Start",function_type.SCENE_01);
-  uf.addButton(width + width * 0.1,height * 0.05,"Back",function_type.SCENE_02);
+  uf.addButton(width/2 - 50,height * 0.8,"Start",function_type.SCENE_01);
+  uf.addButton(width + width * 0.1,height * 0.05,"ReStart",function_type.SCENE_01);
 }
 
 void draw(){
@@ -86,5 +86,6 @@ void mouseReleased(){
 }
 
 void keyPressed(){
-  
+  if(isLockScene)
+    seleScene.checkKeyPress();
 }

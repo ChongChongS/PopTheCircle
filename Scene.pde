@@ -12,6 +12,7 @@ abstract class Scene {
   abstract void  checkHover(float mx, float my);
   abstract void  checkPress(float mx, float my);
   abstract void  checkRelease(float mx, float my);
+  abstract void  checkKeyPress();
 }
 
 class SceneStart extends Scene {
@@ -74,6 +75,9 @@ class SceneStart extends Scene {
   void checkRelease(float mx, float my) {
   }
 
+  void  checkKeyPress() {
+  }
+
   void branch(float len) {
     float sw = map(len, 2, 120, 1, 10);
     strokeWeight(sw);
@@ -114,8 +118,10 @@ class SceneGame extends Scene {
   int timer, maxTime;
   //游戏音效
   ArrayList<AudioPlayer> sounds;
-  //显示文字
+  //显示文字与图片
   ArrayList<TextArea> tas;
+  int score;
+  PImage bg;
 
   SceneGame(int x, int y) {
     anchor = new PVector(x * width, y * height);
@@ -151,6 +157,8 @@ class SceneGame extends Scene {
     sounds.add(minim.loadFile("sound7.mp3"));
 
     tas = new ArrayList<TextArea>();
+    score = 0;
+    bg = loadImage("bg.jpg");
   }
 
   Scene load() {
@@ -189,7 +197,7 @@ class SceneGame extends Scene {
 
       if (gameState == die)
       {
-        if(r <= height)
+        if (r <= height)
           Ani.to(this, 0.2, "r", height * 2, Ani.BOUNCE_IN_OUT);
       }
     }
@@ -198,9 +206,10 @@ class SceneGame extends Scene {
   void display() {
     pushMatrix();
     translate(anchor.x, anchor.y);
-    fill(#f2eada);
-    noStroke();
-    rect(0, 0, size.x, size.y);
+    //fill(#f2eada);
+    //noStroke();
+    //rect(0, 0, size.x, size.y);
+    image(bg,0,0,width,height);
 
     if (r <= height) {
       noFill();
@@ -208,7 +217,7 @@ class SceneGame extends Scene {
       //next circle
       stroke(nextC);
       strokeWeight(RWeight);
-      if(isCircle)
+      if (isCircle)
         ellipse(width/2, height/2, nextR, nextR);
       else
         rect(width/2 - nextR/2, height/2 - nextR/2, nextR, nextR);
@@ -219,7 +228,7 @@ class SceneGame extends Scene {
       //the circle
       stroke(100);
       strokeWeight(rWeight);
-      if(isCircle)
+      if (isCircle)
         ellipse(width/2, height/2, r, r);
       else
         rect(width/2 - r/2, height/2 - r/2, r, r);
@@ -239,8 +248,14 @@ class SceneGame extends Scene {
       }
 
       //texts
-      for (TextArea ta : tas)
-        ta.draw();
+      if (tas.size() > 0) {
+        for (int i = 0; i < tas.size(); i++) {
+          if (tas.get(i).isDead())
+            tas.remove(tas.get(i));
+          else
+            tas.get(i).draw();
+        }
+      }
     } else {
       fill(color(255, 0, 0));
       textSize(30);
@@ -272,8 +287,7 @@ class SceneGame extends Scene {
         str = "Nice";
       else
         str = "Good";
-      if (str != null)
-        tas.add(new TextArea(mx - width - 100, my - 100, 100, 100, str));
+      tas.add(new TextArea(mx - width - 100, my - 100, 100, 100, str));
 
       int newNum = int(random(80, 120));
       particleSystems.add(new ParticleSystem(int(nextR/2 + 10), newNum, nextC));
@@ -303,5 +317,9 @@ class SceneGame extends Scene {
   }
 
   void checkRelease(float mx, float my) {
+  }
+
+  void checkKeyPress() {
+    isCircle = !isCircle;
   }
 }

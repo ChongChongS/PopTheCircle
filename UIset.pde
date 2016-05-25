@@ -210,7 +210,7 @@ public enum button_type {
 class uiButton implements Clickable
 {
   //常量
-  static final float default_w = 80;
+  static final float default_w = 100;
   static final float default_h = 30;
 
   KnowMouseArea area;
