@@ -137,7 +137,7 @@ class SceneGame extends Scene {
     nextR = random(100, 200);
     isLarger = r - nextR;
     nextC = color(random(255), random(255), random(255));
-    speed = (r - nextR)%200;
+    speed = (r - nextR);
     isCircle = true;
 
     gameState = running;

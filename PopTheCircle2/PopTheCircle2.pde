@@ -10,7 +10,7 @@ final int WIDTH = 860;
 void settings() {
   float ww = WIDTH;
   float hh = ww*9/16;
-  size(int(ww), int(hh));
+  size(int(ww), int(hh),P2D);
 }
 
 ArrayList<Scene>ss;

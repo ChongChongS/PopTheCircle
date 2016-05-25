@@ -109,6 +109,7 @@ class SceneGame extends Scene {
   int lastCreatPosX, lastCreatPosY;
   PImage bg;
   int id,clickCount;
+  int difficulty;
 
   SceneGame(int x, int y) {
     anchor = new PVector(x * width, y * height);
@@ -132,6 +133,7 @@ class SceneGame extends Scene {
     timer = millis();
      
     id = 0;
+    difficulty = 2;
   }
 
   Scene load() {
@@ -148,7 +150,7 @@ class SceneGame extends Scene {
     if (millis() - timer >= maxTime)
       au.song.play();
 
-    if (au.canCreat()) {
+    if (au.canCreat(difficulty)) {
       cs.add(new Circle(lastCreatPosX, lastCreatPosY,++id));
       float ranx = random(100);
       float rany = random(100);
@@ -230,6 +232,16 @@ class SceneGame extends Scene {
   }
 
   void checkKeyPress(float mx, float my) {
+    if(keyCode == 49)
+      difficulty = 1;
+    else if(keyCode == 50)
+      difficulty = 2;
+    else if(keyCode == 51)
+      difficulty = 3;
+    else if(keyCode == 52)
+      difficulty = 4;
+    println(difficulty);
+    
     for (int i = cs.size() - 1; i >= 0; i--) {
       Circle c = cs.get(i);
       if (c.isInside(mx, my) && c.circleState == 1 ){//&& (clickCount == c.id)) {

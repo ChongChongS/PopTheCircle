@@ -15,11 +15,30 @@ class Audio {
     fft = new FFT( song.bufferSize(), song.sampleRate() );
   }
 
-  boolean canCreat() {
-    if (beat.isKick()){//&& frameRate%4 <= 0.2){//beat.isKick() && beat.isHat()) || beat.isSnare()
-      return true;
-    } else {
-      return false;
+  boolean canCreat(int id) {
+    switch(id) {
+      case 1:
+        if(beat.isKick() && beat.isSnare())
+          return true;
+        else
+          return false;
+      case 2:
+        if(beat.isKick())
+          return true;
+        else
+          return false;
+      case 3:
+        if(beat.isKick() || beat.isSnare())
+          return true;
+        else
+          return false;
+      case 4:
+        if(beat.isKick() || beat.isHat())
+          return true;
+        else
+          return false;
+      default:
+        return false;
     }
   }
 
