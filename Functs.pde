@@ -15,6 +15,7 @@ void doEvent(function_type value) {
     changeToStartMenu();
     break;
   case SCENE_03: 
+    changeToGameView2();
     break;
   default: 
     println("ERROR：使用了未初始化的枚举值（function_enum）"); 
@@ -26,6 +27,12 @@ void changeToGameView() {
   println("scene01 function");
   ss.get(1).reset();
   sc.moveToScene(ss.get(1));
+}
+
+void changeToGameView2() {
+  println("scene03 function");
+  ss.get(2).reset();
+  sc.moveToScene(ss.get(2));
 }
 
 void changeToStartMenu() {

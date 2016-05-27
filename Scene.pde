@@ -13,6 +13,7 @@ abstract class Scene {
   abstract void  checkPress(float mx, float my);
   abstract void  checkRelease(float mx, float my);
   abstract void  checkKeyPress();
+  abstract void  checkKeyPress(float mx, float my);
 }
 
 class SceneStart extends Scene {
@@ -78,6 +79,9 @@ class SceneStart extends Scene {
   void  checkKeyPress() {
   }
 
+  void  checkKeyPress(float mx, float my) {
+  }
+
   void branch(float len) {
     float sw = map(len, 2, 120, 1, 10);
     strokeWeight(sw);
@@ -110,7 +114,7 @@ class SceneGame extends Scene {
   //游戏状态
   final int die = 0;
   final int running = 1;
-  final int stop = 2;
+  final int stop = 2; 
   int gameState;
   //关于粒子
   ArrayList<ParticleSystem> particleSystems;
@@ -137,7 +141,7 @@ class SceneGame extends Scene {
     nextR = random(100, 200);
     isLarger = r - nextR;
     nextC = color(random(255), random(255), random(255));
-    speed = (r - nextR);
+    speed = 2;
     isCircle = true;
 
     gameState = running;
@@ -174,13 +178,7 @@ class SceneGame extends Scene {
   void update() {
     if (millis() - timer >= maxTime) {
       if (gameState == running) {
-        //设定速度
-        if (isLarger <= 100)
-          speed = 1;
-        else if (isLarger <= 200)
-          speed = 2;
-        else
-          speed = 3;
+
         //缩放圆圈  
         if (isLarger >= 0) {
           r -= speed;
@@ -208,10 +206,16 @@ class SceneGame extends Scene {
   void display() {
     pushMatrix();
     translate(anchor.x, anchor.y);
-    //fill(#f2eada);
-    //noStroke();
-    //rect(0, 0, size.x, size.y);
-    image(bg, 0, 0, width, height);
+    fill(#f2eada);
+    noStroke();
+    rect(0, 0, size.x, size.y);
+    fill(0);
+    textSize(15);
+    text("space to change shape", width * 0.15, height * 0.3);
+    text("1 speed down,2 speed up", width * 0.15, height * 0.4);
+    text("speed: " + speed, width * 0.1, height * 0.5);
+    text("score: " + score, width * 0.1, height * 0.6);
+    //image(bg, 0, 0, width, height);
 
     if (r <= height) {
       noFill();
@@ -283,13 +287,19 @@ class SceneGame extends Scene {
       (r - rWeight/2) >= (nextR - RWeight)) {
 
       String str = null;
-      if ((r - nextR) <= 0.5)
-        str = "Perfect";
-      else if ((r - nextR) <= 1)
-        str = "Nice";
-      else
-        str = "Good";
-      tas.add(new TextArea(mx - width - 100, my - 100, 100, 100, str));
+      if ((r - nextR) <= 0.5){
+        str = "Perfect +3";
+        score += 3;
+      }
+      else if ((r - nextR) <= 1){
+        str = "Nice +2";
+        score += 2;
+      }
+      else{
+        str = "Good +1";
+        score += 1;
+      }
+      tas.add(new TextArea(mx + width - 100, my - 100, 100, 100, str));
 
       int newNum = int(random(80, 120));
       particleSystems.add(new ParticleSystem(int(nextR/2 + 10), newNum, nextC));
@@ -322,6 +332,225 @@ class SceneGame extends Scene {
   }
 
   void checkKeyPress() {
-    isCircle = !isCircle;
+    if (keyCode == 32)
+      isCircle = !isCircle;
+    if (keyCode == 49)
+      speed--;
+    if (keyCode == 50)
+      speed++;
+    println("speed: "+speed);
+  }
+
+  void  checkKeyPress(float mx, float my) {
+  }
+}
+
+class SceneGame2 extends Scene {
+  Audio au;
+  ArrayList<Circle> cs;
+  ArrayList<ParticleSystem> pss;
+  ArrayList<TextArea> tas;
+  int timer, maxTime;
+  int lastCreatPosX, lastCreatPosY;
+  PImage bg;
+  int id, clickCount;
+  int difficulty;
+  float perfectSize, niceSize, goodSize, score,scoreSize;
+
+  SceneGame2(int x, int y) {
+    anchor = new PVector(x * width, y * height);
+    size   = new PVector(width, height);
+
+    init();
+  }
+
+  void init() {
+    au = new Audio();
+    cs = new ArrayList<Circle>();
+    pss = new ArrayList<ParticleSystem>();
+    tas = new ArrayList<TextArea>();
+
+    lastCreatPosX = width/2;
+    lastCreatPosY = height/2;
+
+    bg = loadImage("bg.jpg");
+
+    maxTime = 1000;
+    timer = millis();
+
+    id = 0;
+    difficulty = 2;
+    perfectSize = niceSize = goodSize = scoreSize = 15;
+    score = 0;
+  }
+
+  Scene load() {
+    println("scene game");
+    return this;
+  }
+
+  void reset() {
+    println("reset");
+    init();
+  }
+
+  void update() {
+    if (millis() - timer >= maxTime && transX == width)
+      au.song.play();
+
+    if (au.canCreat(difficulty)) {
+      cs.add(new Circle(lastCreatPosX, lastCreatPosY, ++id));
+      float ranx = random(100);
+      float rany = random(100);
+      if (ranx < 50)
+        lastCreatPosX += random(-120, -100);
+      else
+        lastCreatPosX += random(100, 120);
+      if (rany < 50)
+        lastCreatPosY += random(-120, -100);
+      else
+        lastCreatPosY += random(100, 120);
+      lastCreatPosX = constrain(lastCreatPosX, 100, width - 100);
+      lastCreatPosY = constrain(lastCreatPosY, 100, height - 100);
+    }
+    
+    perfectSize = constrain(perfectSize * 0.95, 15, 30);
+    niceSize = constrain(niceSize * 0.95, 15, 30);
+    goodSize = constrain(goodSize * 0.95, 15, 30);
+    scoreSize = constrain(scoreSize * 0.95, 15, 30);
+  }
+
+  void display() {
+    pushMatrix();
+    //bg
+    translate(anchor.x, anchor.y);
+    image(bg, 0, 0, width, height);
+    //audio
+    au.display();
+    //text
+    fill(0);
+    textSize(15);
+    text("1,2,3,4 to change difficulty", width * 0.15, height * 0.1);
+    text("Difficulty: " + difficulty, width * 0.15, height * 0.2);
+    fill(color(0, 0, 255));
+    textSize(perfectSize);
+    text("Perfect", width * 0.15, height * 0.3);
+    textSize(niceSize);
+    text("Nice", width * 0.15, height * 0.4);
+    textSize(goodSize);
+    text("Good", width * 0.15, height * 0.5);
+    textSize(scoreSize);
+    text("Score: " + score, width * 0.15, height * 0.6);
+    
+    //circle
+    for (int i = cs.size() - 1; i >= 0; i--) {
+      Circle c = cs.get(i);
+      if (c.circleState == 2) {
+        //pss.add(new ParticleSystem(c.x, c.y, int(c.R + 10), int(random(80, 120)), c.col));
+        cs.remove(i);
+      } else
+        c.run();
+    }
+    //particle systems
+    for (int i = pss.size() - 1; i >= 0; i--) {
+      ParticleSystem p = pss.get(i);
+      if (p.dead()) 
+        pss.remove(i);
+      else
+        p.run();
+    }
+    //text
+    for (int i = 0; i < tas.size(); i++) {
+      if (tas.get(i).isDead())
+        tas.remove(tas.get(i));
+      else
+        tas.get(i).draw();
+    }
+    popMatrix();
+  }
+
+  void update_unlock() {
+  }
+
+  void display_unlock() {
+  }
+
+  void checkHover(float mx, float my) {
+  }
+
+  void checkPress(float mx, float my) {
+    for (int i = cs.size() - 1; i >= 0; i--) {
+      Circle c = cs.get(i);
+      if (c.isInside(mx, my) && c.circleState == 1 ) {//&& (++clickCount == c.id)) {
+        String str = null;
+        if ((c.r - c.R) <= 5){
+          str = "Good +5";
+          goodSize = 30;
+          score += 5;
+          scoreSize = 30;
+        }
+        else if ((c.r - c.R) <= 10){
+          str = "Nice +10";
+          niceSize = 30;
+          score += 10;
+          scoreSize = 30;
+        }
+        else{
+          str = "Perfect +15";
+          perfectSize = 30;
+          score += 15;
+          scoreSize = 30;
+        }
+        tas.add(new TextArea(mx - width - 100, my - 100, 100, 100, str));
+        pss.add(new ParticleSystem(c.x, c.y, int(c.R + 10), int(random(80, 120)), c.col));
+        c.circleState = 2;
+      }
+    }
+  }
+
+  void checkRelease(float mx, float my) {
+  }
+
+  void  checkKeyPress() {
+  }
+
+  void checkKeyPress(float mx, float my) {
+    if (keyCode == 49)
+      difficulty = 1;
+    else if (keyCode == 50)
+      difficulty = 2;
+    else if (keyCode == 51)
+      difficulty = 3;
+    else if (keyCode == 52)
+      difficulty = 4;
+    println(difficulty);
+
+    for (int i = cs.size() - 1; i >= 0; i--) {
+      Circle c = cs.get(i);
+      if (c.isInside(mx, my) && c.circleState == 1 ) {//&& (clickCount == c.id)) {
+        String str = null;
+        if ((c.r - c.R) <= 5){
+          str = "Good +5";
+          goodSize = 30;
+          score += 5;
+          scoreSize = 30;
+        }
+        else if ((c.r - c.R) <= 10){
+          str = "Nice +10";
+          niceSize = 30;
+          score += 10;
+          scoreSize = 30;
+        }
+        else{
+          str = "Perfect +15";
+          perfectSize = 30;
+          score += 15;
+          scoreSize = 30;
+        }
+        tas.add(new TextArea(mx - width - 100, my - 100, 100, 100, str));
+        pss.add(new ParticleSystem(c.x, c.y, int(c.R + 10), int(random(80, 120)), c.col));
+        c.circleState = 2;
+      }
+    }
   }
 }

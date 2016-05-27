@@ -1,5 +1,6 @@
 import de.looksgood.ani.*;
 import ddf.minim.*;
+import ddf.minim.analysis.*;
   
 Minim minim;
 
@@ -34,7 +35,8 @@ void setup(){
   
   ss = new ArrayList<Scene>();
   ss.add(new SceneStart(0,0).load());
-  ss.add(new SceneGame(1,0).load());
+  ss.add(new SceneGame2(1,0).load());
+  ss.add(new SceneGame(-1,0).load());
   
   isLockScene = true;
   seleScene = ss.get(0);
@@ -42,8 +44,10 @@ void setup(){
   //构建按钮
   us = UIset.getInstance();
   uf = new UIfactory(us);
-  uf.addButton(width/2 - 50,height * 0.8,"Start",function_type.SCENE_01);
-  uf.addButton(width + width * 0.1,height * 0.05,"ReStart",function_type.SCENE_01);
+  uf.addButton(width/2 - 100,height * 0.8,"Game2",function_type.SCENE_01);
+  uf.addButton(width/2,height * 0.8,"Game1",function_type.SCENE_03);
+  uf.addButton(-width + width * 0.05,height * 0.05,"Back",function_type.SCENE_02);
+  uf.addButton(-width + width * 0.05,height * 0.05 + 50,"ReStart",function_type.SCENE_03);
 }
 
 void draw(){
@@ -86,6 +90,8 @@ void mouseReleased(){
 }
 
 void keyPressed(){
-  if(isLockScene)
+  if(isLockScene){
     seleScene.checkKeyPress();
+    seleScene.checkKeyPress(transX+mouseX,transY+mouseY);
+  }
 }

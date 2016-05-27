@@ -3,13 +3,15 @@ class Particle {
   float lifespan;
   int R;
   color col;
-  float r;
+  float r,cx,cy;
 
   Particle(color mCol, int mR) {
     col = mCol;
     R = mR;
     lifespan = 255.0;
     r = random(3, 20);
+    cx = 0;
+    cy = 0;
     
     float ran = random(100);
     float temX = random(width/2 - mR,width/2 + mR);
@@ -19,6 +21,24 @@ class Particle {
     }
     else
       loc = new PVector(temX,height/2 + temY);
+  }
+  
+  Particle(float x,float y,color mCol, int mR) {
+    col = mCol;
+    R = mR;
+    lifespan = 255.0;
+    r = random(3, 20);
+    cx = x;
+    cy = y;
+    
+    float ran = random(100);
+    float temX = random(cx - mR,cx + mR);
+    float temY = sqrt(pow(R,2) - pow(abs(cx - temX),2));
+    if(ran < 50){
+      loc = new PVector(temX,cy - temY);
+    }
+    else
+      loc = new PVector(temX,cy + temY);
   }
   
   void run() {
