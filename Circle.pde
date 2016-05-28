@@ -16,7 +16,7 @@ class Circle {
     r = R + RWeight + 5;
 
     col = color(random(255), random(255), random(255), 200);
-    speed = 2;
+    speed = 1;
     circleState = 0;
     id = m_id;
   }
